@@ -5,7 +5,7 @@ RHEL の **メジャー / マイナーバージョン** と **対象月 (YYYY-MM
 [Red Hat Security Data API](https://access.redhat.com/hydra/rest/securitydata/) から取得し、
 JSON で返す Web アプリケーションです。
 
-- 言語/FW: Python 3.11+ / FastAPI
+- 言語/FW: **Python 3.12** (推奨: **3.12.13**) / FastAPI
 - 公開: REST API (`GET /api/rhsa`) と 簡易 HTML UI (`/`)
 - 認証: 不要 (Red Hat Security Data API は公開エンドポイント)
 
@@ -14,6 +14,11 @@ JSON で返す Web アプリケーションです。
 ```bash
 git clone https://github.com/batoer-0605/rhel-vuln.git
 cd rhel-vuln
+
+# Python 3.12.13 を pyenv で導入 (推奨)
+pyenv install 3.12.13
+pyenv local 3.12.13
+
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000

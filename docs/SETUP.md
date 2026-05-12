@@ -9,11 +9,14 @@
 | 項目 | 要件 |
 |---|---|
 | OS | Linux / macOS / Windows (WSL2 推奨) |
-| Python | 3.11 以上 (`python --version` で確認) |
+| Python | **3.12 系** (推奨: **3.12.13**) — `python --version` で確認 |
 | pip | 24 以上を推奨 (`python -m pip install --upgrade pip`) |
 | ネットワーク | `https://access.redhat.com` への HTTPS 到達性 |
 | メモリ | 256 MB 以上で十分 |
 | ディスク | 約 100 MB (依存パッケージ含む) |
+
+> `pyproject.toml` は `requires-python = ">=3.12,<3.13"` で 3.12 系のみを公式サポートとしています。
+> 3.11 以下では `pip install` が失敗します。
 
 > プロキシ環境下の場合は別途「9. トラブルシュート」を参照してください。
 
@@ -32,6 +35,28 @@ cd rhel-vuln
 git fetch origin claude/rhel-vulnerability-app-njZF1
 git checkout claude/rhel-vulnerability-app-njZF1
 ```
+
+---
+
+## 2.5. Python 3.12.13 の導入 (pyenv 推奨)
+
+システム標準の Python が 3.12 系でない場合は、`pyenv` でリポジトリ専用に固定するのが安全です。
+
+```bash
+# pyenv 未導入なら https://github.com/pyenv/pyenv-installer を参照
+
+pyenv install 3.12.13            # 既にあればスキップされます
+cd rhel-vuln
+pyenv local 3.12.13              # .python-version を作成し当該ディレクトリで固定
+python --version                  # => Python 3.12.13
+```
+
+> `pyenv local` が出力する `.python-version` ファイルは個人のローカル設定なので
+> 通常はコミットしません (リポジトリでは `.gitignore` に含めるか、必要に応じて
+> チームで取り扱いを決めてください)。
+
+Windows の場合は [pyenv-win](https://github.com/pyenv-win/pyenv-win) または公式
+インストーラから 3.12.13 を入れてください。
 
 ---
 
@@ -155,7 +180,7 @@ pytest --cov=app --cov-report=term-missing
 最小構成の `Dockerfile` 例 (リポジトリには未同梱・必要に応じて追加):
 
 ```dockerfile
-FROM python:3.12-slim
+FROM python:3.12.13-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -175,10 +200,11 @@ docker run --rm -p 8000:8000 rhel-vuln:dev
 
 ## 9. トラブルシュート
 
-### Python バージョンが古い
+### Python バージョンが 3.12 系でない
 
-`python --version` が 3.11 未満の場合、`pyenv` などで 3.11/3.12 を導入してください。
-`pydantic v2` / `fastapi` 最新版は 3.10+ ですが、本リポジトリの型ヒントは 3.11 想定です。
+`python --version` が `Python 3.12.x` でない場合、`pip install` が
+`requires-python = ">=3.12,<3.13"` で失敗します。「2.5. Python 3.12.13 の導入」を
+参照して `pyenv` で 3.12.13 を入れてください。
 
 ### `access.redhat.com` に到達できない
 
