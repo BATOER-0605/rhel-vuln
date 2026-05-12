@@ -1,0 +1,64 @@
+[
+  {
+    "RHSA": "RHSA-2024:6464",
+    "severity": "Important",
+    "released_on": "2024-09-10T00:00:00Z",
+    "CVEs": ["CVE-2024-1111", "CVE-2024-2222"],
+    "bugzilla": ["2300001"],
+    "released_packages": [
+      "kernel-4.18.0-553.16.1.el8_10.x86_64",
+      "kernel-headers-4.18.0-553.16.1.el8_10.x86_64"
+    ],
+    "resource_url": "https://access.redhat.com/hydra/rest/securitydata/cvrf/RHSA-2024:6464.json",
+    "synopsis": "Important: kernel security update"
+  },
+  {
+    "RHSA": "RHSA-2024:6500",
+    "severity": "Moderate",
+    "released_on": "2024-09-15T00:00:00Z",
+    "CVEs": ["CVE-2024-3333"],
+    "bugzilla": ["2300002"],
+    "released_packages": [
+      "openssl-1.1.1k-12.el8_4.x86_64"
+    ],
+    "resource_url": "https://access.redhat.com/hydra/rest/securitydata/cvrf/RHSA-2024:6500.json",
+    "synopsis": "Moderate: openssl EUS update for 8.4"
+  },
+  {
+    "RHSA": "RHSA-2024:6600",
+    "severity": "Important",
+    "released_on": "2024-09-20T00:00:00Z",
+    "CVEs": ["CVE-2024-4444"],
+    "bugzilla": ["2300003"],
+    "released_packages": [
+      "glibc-2.34-100.el9.x86_64"
+    ],
+    "resource_url": "https://access.redhat.com/hydra/rest/securitydata/cvrf/RHSA-2024:6600.json",
+    "synopsis": "Important: glibc update for RHEL 9"
+  },
+  {
+    "RHSA": "RHSA-2024:6700",
+    "severity": "Low",
+    "released_on": "2024-09-25T00:00:00Z",
+    "CVEs": ["CVE-2024-5555"],
+    "bugzilla": ["2300004"],
+    "released_packages": [
+      "nginx-1.20-50.el8_6.x86_64"
+    ],
+    "resource_url": "https://access.redhat.com/hydra/rest/securitydata/cvrf/RHSA-2024:6700.json",
+    "synopsis": "Low: nginx update for 8.6 EUS"
+  },
+  {
+    "RHSA": "RHSA-2024:6800",
+    "severity": "Critical",
+    "released_on": "2024-09-28T00:00:00Z",
+    "CVEs": ["CVE-2024-6666"],
+    "bugzilla": ["2300005"],
+    "released_packages": [
+      "bash-5.1-8.el8.x86_64",
+      "bash-doc-5.1-8.el8.noarch"
+    ],
+    "resource_url": "https://access.redhat.com/hydra/rest/securitydata/cvrf/RHSA-2024:6800.json",
+    "synopsis": "Critical: bash update"
+  }
+]

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RHEL Vulnerability Scanner</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1 { margin-bottom: 0.25rem; }
+    .sub { color: #666; margin-top: 0; }
+    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
+    label { display: flex; flex-direction: column; font-size: 0.9rem; }
+    input, select, button { padding: 0.5rem; font-size: 1rem; }
+    button { grid-column: 1 / -1; background: #cc0000; color: white; border: 0; border-radius: 4px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: progress; }
+    #status { margin-top: 1rem; color: #555; }
+    #error { margin-top: 1rem; color: #b00020; white-space: pre-wrap; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+    th, td { border-bottom: 1px solid #ddd; padding: 0.5rem; vertical-align: top; text-align: left; }
+    th { background: rgba(0,0,0,0.04); }
+    .sev-Critical { color: #b00020; font-weight: 700; }
+    .sev-Important { color: #cc6600; font-weight: 600; }
+    .sev-Moderate { color: #336699; }
+    .sev-Low { color: #4f7a4f; }
+    details summary { cursor: pointer; }
+    pre { background: rgba(0,0,0,0.05); padding: 0.75rem; border-radius: 4px; overflow-x: auto; }
+    footer { margin-top: 2rem; color: #888; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>RHEL Vulnerability Scanner</h1>
+  <p class="sub">RHEL のバージョンと対象月を指定して、その月に初回リリースされた RHSA を一覧で取得します。</p>
+
+  <form id="form">
+    <label>Major
+      <input type="number" name="major" min="5" max="99" required value="8" />
+    </label>
+    <label>Minor (任意)
+      <input type="number" name="minor" min="0" max="99" placeholder="例: 4" />
+    </label>
+    <label>Month (YYYY-MM)
+      <input type="month" name="month" required />
+    </label>
+    <label>Mode
+      <select name="mode">
+        <option value="">auto</option>
+        <option value="minor">minor</option>
+        <option value="major">major</option>
+      </select>
+    </label>
+    <button id="submit" type="submit">検索</button>
+  </form>
+
+  <div id="status"></div>
+  <div id="error"></div>
+  <div id="results"></div>
+
+  <details style="margin-top: 1rem;">
+    <summary>レスポンス JSON を表示</summary>
+    <pre id="json"></pre>
+  </details>
+
+  <footer>
+    v{{ version }} &middot; Data source: Red Hat Security Data API
+    (<a href="https://access.redhat.com/hydra/rest/securitydata/" target="_blank" rel="noopener">access.redhat.com</a>)
+  </footer>
+
+  <script>
+    const form = document.getElementById("form");
+    const statusEl = document.getElementById("status");
+    const errorEl = document.getElementById("error");
+    const resultsEl = document.getElementById("results");
+    const jsonEl = document.getElementById("json");
+    const submitBtn = document.getElementById("submit");
+
+    function sevClass(s) { return s ? `sev-${s}` : ""; }
+
+    function renderResults(data) {
+      const rows = data.results.map(r => `
+        <tr>
+          <td><a href="${r.rhsa_url || '#'}" target="_blank" rel="noopener">${r.rhsa_id}</a></td>
+          <td class="${sevClass(r.severity)}">${r.severity || ''}</td>
+          <td>${(r.released_on || '').slice(0,10)}</td>
+          <td>${(r.title || '').replace(/</g,'&lt;')}</td>
+          <td>${(r.cves || []).join(', ')}</td>
+        </tr>`).join("");
+      resultsEl.innerHTML = `
+        <p>件数: <strong>${data.count}</strong></p>
+        <table>
+          <thead><tr><th>RHSA</th><th>Severity</th><th>Released</th><th>Title</th><th>CVEs</th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="5">該当なし</td></tr>'}</tbody>
+        </table>`;
+      jsonEl.textContent = JSON.stringify(data, null, 2);
+    }
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      errorEl.textContent = "";
+      resultsEl.innerHTML = "";
+      jsonEl.textContent = "";
+      submitBtn.disabled = true;
+      statusEl.textContent = "検索中... (Red Hat API を呼び出しています)";
+
+      const fd = new FormData(form);
+      const qs = new URLSearchParams();
+      for (const [k, v] of fd.entries()) {
+        if (v !== "" && v !== null) qs.append(k, v);
+      }
+      try {
+        const resp = await fetch(`/api/rhsa?${qs.toString()}`);
+        const data = await resp.json();
+        if (!resp.ok) {
+          throw new Error(data.detail || `HTTP ${resp.status}`);
+        }
+        renderResults(data);
+        statusEl.textContent = "";
+      } catch (e) {
+        errorEl.textContent = `エラー: ${e.message}`;
+        statusEl.textContent = "";
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
