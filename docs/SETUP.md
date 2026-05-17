@@ -241,7 +241,7 @@ docker compose run --rm --entrypoint "" app \
 ### `access.redhat.com` に到達できない
 
 ```bash
-curl -I https://access.redhat.com/hydra/rest/securitydata/cvrf.json?after=2024-09-01&before=2024-09-02
+curl -I 'https://access.redhat.com/hydra/rest/securitydata/csaf.json?after=2024-09-01&before=2024-09-02'
 ```
 
 `HTTP/2 200` が返らない場合はネットワーク/プロキシ/DNS を確認してください。

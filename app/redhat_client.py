@@ -42,12 +42,14 @@ class RedHatClient:
     async def __aexit__(self, exc_type, exc, tb) -> None:
         await self.aclose()
 
-    async def list_cvrf(self, after: date, before: date) -> list[dict[str, Any]]:
-        """List CVRF (RHSA) entries released in [after, before).
+    async def list_advisories(self, after: date, before: date) -> list[dict[str, Any]]:
+        """List CSAF (RHSA) entries released in [after, before).
 
-        Iterates over pages until the API returns fewer than PER_PAGE rows.
+        Uses the `/csaf.json` endpoint. The CVRF endpoint was deprecated and
+        removed by Red Hat; CSAF returns the same list-shape fields
+        (``RHSA``, ``severity``, ``released_on``, ``released_packages``, ...).
         """
-        url = f"{self.BASE_URL}/cvrf.json"
+        url = f"{self.BASE_URL}/csaf.json"
         all_rows: list[dict[str, Any]] = []
         page = 1
         while True:

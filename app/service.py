@@ -68,7 +68,7 @@ async def find_rhsa_for_month(
     owns = client is None
     client = client or RedHatClient()
     try:
-        entries = await client.list_cvrf(after, before)
+        entries = await client.list_advisories(after, before)
     finally:
         if owns:
             await client.aclose()

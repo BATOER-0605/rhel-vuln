@@ -93,7 +93,7 @@ curl -s 'http://localhost:8000/api/rhsa?major=9&minor=2&month=2024-09' \
       "cves": ["CVE-2024-3333"],
       "bugzilla_ids": ["2300002"],
       "affected_packages": ["openssl-1.1.1k-12.el8_4.x86_64"],
-      "resource_url": "https://access.redhat.com/hydra/rest/securitydata/cvrf/RHSA-2024:6500.json",
+      "resource_url": "https://access.redhat.com/hydra/rest/securitydata/csaf/RHSA-2024:6500.json",
       "rhsa_url": "https://access.redhat.com/errata/RHSA-2024:6500"
     }
   ]
@@ -116,7 +116,7 @@ curl -s 'http://localhost:8000/api/rhsa?major=9&minor=2&month=2024-09' \
 | `results[].cves` | string[] | 紐付く CVE 一覧 |
 | `results[].bugzilla_ids` | string[] | 紐付く Bugzilla ID 一覧 |
 | `results[].affected_packages` | string[] | リリースされた NVR 一覧 (`.elX_Y` 等) |
-| `results[].resource_url` | string | 元 CVRF JSON へのリンク |
+| `results[].resource_url` | string | 元 CSAF JSON へのリンク |
 | `results[].rhsa_url` | string | Red Hat Errata ページへのリンク |
 
 ### 3.5 ステータスコード
@@ -183,7 +183,7 @@ curl -s 'http://localhost:8000/api/rhsa?major=8&minor=4&month=2024-09' \
   本ツールは月単位でリスト 1 回呼び出し + 必要に応じてページングするだけのため、
   通常利用では問題になりません。短時間に多数のリクエストを送る場合は呼び出し側で間隔を空けてください。
 - **CVE フィルタ非対応**: 本ツールは CVE 単位ではなく RHSA 単位での検索を行います。
-  CVE 単位での詳細は `resource_url` 先の CVRF JSON を参照してください。
+  CVE 単位での詳細は `resource_url` 先の CSAF JSON を参照してください。
 
 ---
 
