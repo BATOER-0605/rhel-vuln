@@ -11,6 +11,21 @@ JSON で返す Web アプリケーションです。
 
 ## クイックスタート
 
+### A. Docker Compose で起動 (推奨)
+
+Docker さえあれば Python を用意せずに起動できます。
+
+```bash
+git clone https://github.com/batoer-0605/rhel-vuln.git
+cd rhel-vuln
+docker compose up -d --build
+```
+
+停止は `docker compose down`、ログは `docker compose logs -f app`。
+詳細は [docs/SETUP.md §8](docs/SETUP.md#8-docker-compose-での起動-推奨)。
+
+### B. ローカル Python (3.12.13) で起動
+
 ```bash
 git clone https://github.com/batoer-0605/rhel-vuln.git
 cd rhel-vuln

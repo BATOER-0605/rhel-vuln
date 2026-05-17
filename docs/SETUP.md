@@ -175,26 +175,58 @@ pytest --cov=app --cov-report=term-missing
 
 ---
 
-## 8. (任意) Docker での起動
+## 8. Docker Compose での起動 (推奨)
 
-最小構成の `Dockerfile` 例 (リポジトリには未同梱・必要に応じて追加):
+リポジトリ直下に `Dockerfile` / `docker-compose.yml` / `.dockerignore` を同梱しています。
+ローカルに Python を入れずに **`docker compose` だけで** 起動できます。
 
-```dockerfile
-FROM python:3.12.13-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY app ./app
-EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
+### 8.1 前提
+- Docker Engine 20.10+ / Docker Desktop
+- Compose plugin (`docker compose version` で `v2` 以上)
 
-ビルドと起動:
+### 8.2 起動
 
 ```bash
-docker build -t rhel-vuln:dev .
-docker run --rm -p 8000:8000 rhel-vuln:dev
+docker compose up -d --build
 ```
+
+- `-d`: バックグラウンド起動
+- `--build`: 初回 or `requirements.txt` / `app/` 変更時に再ビルド
+- ホスト側ポートを変更したい場合: `APP_PORT=18000 docker compose up -d`
+
+### 8.3 動作確認
+
+```bash
+docker compose ps
+curl http://localhost:8000/healthz
+# => {"status":"ok","version":"0.1.0"}
+```
+
+ヘルスチェックは Compose に組み込み済みで、`STATUS` が `Up (healthy)` になれば OK。
+
+### 8.4 ログ確認 / 停止 / 再起動
+
+```bash
+docker compose logs -f app   # ログ追従
+docker compose restart app   # 再起動
+docker compose down          # 停止 & コンテナ削除
+docker compose down -v       # ボリュームも削除 (本アプリは未使用)
+```
+
+### 8.5 一時的にコンテナ内で `pytest` を流す
+
+```bash
+docker compose run --rm --entrypoint "" app \
+  sh -c "pip install pytest pytest-asyncio respx && pytest -q"
+```
+
+### 8.6 構成
+
+| ファイル | 役割 |
+|---|---|
+| `Dockerfile` | `python:3.12.13-slim` ベース、非 root (`appuser`) で `uvicorn` を起動 |
+| `docker-compose.yml` | サービス `app` を定義。ポート公開、ヘルスチェック、`restart: unless-stopped` |
+| `.dockerignore` | `tests/`, `docs/`, `.git/`, キャッシュ類を除外しビルドコンテキストを軽量化 |
 
 ---
 
